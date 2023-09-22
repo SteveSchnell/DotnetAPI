@@ -1,6 +1,10 @@
 ﻿namespace DotnetAPI.Models
 {
-    public class Users
+    public class UserJobInfo
     {
+        public int UserId { get; set; }
+        public string JobTitle { get; set; } = string.Empty;
+        public string Department { get; set; } = string.Empty;
+
     }
 }

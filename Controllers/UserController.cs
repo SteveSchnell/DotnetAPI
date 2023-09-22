@@ -1,4 +1,5 @@
 using DotnetAPI.Data;
+using DotnetAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotnetAPI.Controllers;
@@ -15,61 +16,40 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("TestConnection")]
-
     public DateTime TestConnection()
     {
         return _dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
     }
 
-
-
-    [HttpGet("GetUsers/{testValue}")]
-    //public IEnumerable<User> GetUsers()
-    public String[] GetUsers(string testValue)
+    [HttpGet("GetUsers")]
+    public IEnumerable<User> GetUsers()
     {
-        return new String[] { "user1", "user2", testValue };
+        string sql = @"
+            SELECT [UserId],
+                [FirstName],
+                [LastName],
+                [Email],
+                [Gender],
+            [Active] FROM TutorialAppSchema.Users
+        ";
+
+        IEnumerable<User> users = _dapper.LoadData<User>(sql);
+        return users;
+    }
+
+    [HttpGet("GetSingleUser/{userId}")]
+    public User GetSingleUser(int userId)
+    {
+        string sql = @"
+            SELECT [UserId],
+                [FirstName],
+                [LastName],
+                [Email],
+                [Gender],
+            [Active] FROM TutorialAppSchema.Users
+                    WHERE UserId = " + userId.ToString();
+
+        User user = _dapper.LoadDataSingle<User>(sql);
+        return user;
     }
 }
-/*
- * {
-  "$schema": "https://json.schemastore.org/launchsettings.json",
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:60933",
-      "sslPort": 44373
-    }
-  },
-  "profiles": {
-    "http": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "applicationUrl": "http://localhost:5000",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "https": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:5001;http://localhost:5000",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    }
-  }
-}
-*/
